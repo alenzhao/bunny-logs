@@ -1,6 +1,6 @@
 package com.google.bunnylog.logger;
 
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 import com.google.cloud.dataflow.sdk.transforms.DoFn;
 
 
@@ -27,7 +27,7 @@ public abstract class DoFnWLog<T,U> extends DoFn<T,U> {
 
   @Override
   public void startBundle(DoFn<T, U>.Context c) throws Exception {
-    bunny = new BunnyLog(LoggerFactory.getLogger(className));
+    bunny = new BunnyLog(LogManager.getLogger(className));
     bunny.start(opName);
   }
 

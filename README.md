@@ -12,7 +12,7 @@ You give it logs, and it will give you reports like this one:
     FeedRabbit : 
          0h01m00s (span),     0h01m00s (total),      1 #,   60.0 s each
     OVERALL: 
-         0h01m00s (span),     0h02m30s (total),      15 #,  16.1 s each
+         0h01m15s (span),     0h02m30s (total),      15 #,  10.0 s each
 
 Each operation can be running on multiple computers or cores.
 The "#" column indicates, for each operation, how many instances were run. 

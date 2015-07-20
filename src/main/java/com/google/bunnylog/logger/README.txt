@@ -1,0 +1,1 @@
+This folder contains logging helper classes. They are meant to be used in the program that generates the logs.

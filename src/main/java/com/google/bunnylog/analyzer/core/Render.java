@@ -77,7 +77,7 @@ public class Render {
         // if something starts and ends at the same time, we still give it a width of 1.
         long w = (iv.getEnd().getTime() - iv.getStart().getTime())/1000+1;
         out.println("<rect x=\"" + x + "\" y=\"" + y + "\" width=\"" + w + "\" height=\"" + barHeight + "\""
-            + " style=\"fill:rgb("+bg.getRed()+","+bg.getGreen()+","+bg.getBlue()+");stroke-width:2;stroke:rgb(0,0,0)\"><title>"
+            + " style=\"fill:rgb("+bg.getRed()+","+bg.getGreen()+","+bg.getBlue()+");stroke-width:1;stroke:rgb(0,0,0)\"><title>"
             + iv.getLabel()
             + "</title></rect>");
         Color fg = bg.brighter();
@@ -114,7 +114,7 @@ public class Render {
           long radius = barHeight/2;
           out.println("<rect x=\"" + x2 + "\" y=\"" + y + "\" width=\"" + w2 + "\" height=\"" + barHeight + "\""
               + " rx=\"" + radius + "\" ry=\"" + radius + "\""
-              + " style=\"fill:rgb("+fg.getRed()+","+fg.getGreen()+","+fg.getBlue()+");stroke-width:2;stroke:rgb(0,0,0)\"><title>"
+              + " style=\"fill:rgb("+fg.getRed()+","+fg.getGreen()+","+fg.getBlue()+");stroke-width:1;stroke:rgb(0,0,0)\"><title>"
               + op.getLabel()
               + "</title></rect>");
         }

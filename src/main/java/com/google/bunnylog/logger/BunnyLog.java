@@ -1,8 +1,7 @@
 package com.google.bunnylog.logger;
 
 import java.util.Random;
-import org.slf4j.Logger;
-
+import org.apache.logging.log4j.Logger;
 /**
  * The "bunny" log format:
  *

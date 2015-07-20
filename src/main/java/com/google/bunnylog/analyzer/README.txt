@@ -1,0 +1,1 @@
+This folder contains log analysis classes. They are meant to be used after you have gathered the logs you need.
