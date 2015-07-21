@@ -4,6 +4,7 @@ import com.google.bunnylog.analyzer.core.Log4jParser;
 import com.google.bunnylog.analyzer.core.OperationInterval;
 import com.google.bunnylog.analyzer.core.Render;
 import com.google.bunnylog.analyzer.core.Summarize;
+import com.google.bunnylog.analyzer.gcp.ClientStdoutParser;
 import com.google.bunnylog.analyzer.gcp.DataflowParser;
 
 import java.io.File;
@@ -26,7 +27,7 @@ public class Main {
 
   public static void main(String[] args) throws Exception {
     String dfLog = null;
-    String l4jLog = null;
+    ArrayList<String> l4jLogs = new ArrayList<>();
     String jobId = null;
     if (args.length < 1) {
       help();
@@ -39,7 +40,7 @@ public class Main {
         return;
       }
       if (a.equals("-l")) {
-        l4jLog = args[++i];
+        l4jLogs.add(args[++i]);
       } else if (a.equals("-d")) {
         dfLog = args[++i];
       } else if (a.equals("-j")) {
@@ -50,14 +51,17 @@ public class Main {
       }
     }
 
-    if (null==dfLog && null==l4jLog) {
+    if (null==dfLog && null==l4jLogs) {
       help();
       return;
     }
 
     ArrayList<OperationInterval> ops = new ArrayList<>();
     if (null!=dfLog) ops.addAll(DataflowParser.parse(dfLog, jobId));
-    if (null!=l4jLog) ops.addAll(Log4jParser.parse(l4jLog));
+    for (String l : l4jLogs) {
+      ops.addAll(Log4jParser.parse(l));
+      ops.addAll(ClientStdoutParser.parse(l));
+    }
     if (null != jobId) {
       System.out.println("Summary for Job ID " + jobId);
     } else {

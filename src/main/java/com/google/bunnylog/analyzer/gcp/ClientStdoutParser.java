@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Reads the stdout of a Dataflow application (client-side).
@@ -33,34 +34,30 @@ public class ClientStdoutParser {
 
         // We're looking for the following sequence:
         // Submitted job: 2015-07-14_12_26_52-15432457801169333516
-        // 2015-07-14T19:26:59.295Z: (52599cc9274ddb4): Starting worker pool synchronously...
-        // 2015-07-14T19:31:46.412Z: (52599cc9274dde3): Worker pool is running.
-        // 2015-07-14T19:32:35.720Z: S04: (5f60ac31b9f746ee): Executing operation Globally/Combine.Globally/AsIterable/CreatePCollectionView
-        // 2015-07-14T19:31:47.829Z: (623062ee9246d205): Executing operation Globally/Combine.Globally/AnonymousParDo/Reshard/Close
-        // 2015-07-14T19:32:38.658Z: (bc4d81d0e967ade9): Starting worker pool teardown.
-        // 2015-07-14T19:33:42.023Z: (bc4d81d0e967a41e): Worker pool stopped.
+        // 2015-07-14T19:26:59.295Z: (52599cc9274ddb4): Basic: Starting worker pool synchronously...
+        // 2015-07-14T19:31:46.412Z: (52599cc9274dde3): Basic: Worker pool is running.
+        // 2015-07-14T19:32:35.720Z: S04: (5f60ac31b9f746ee): Basic: Executing operation Globally/Combine.Globally/AsIterable/CreatePCollectionView
+        // 2015-07-14T19:31:47.829Z: (623062ee9246d205): Basic: Executing operation Globally/Combine.Globally/AnonymousParDo/Reshard/Close
+        // 2015-07-14T19:32:38.658Z: (bc4d81d0e967ade9): Basic: Starting worker pool teardown.
+        // 2015-07-14T19:33:42.023Z: (bc4d81d0e967a41e): Basic: Worker pool stopped.
         Date when;
         String[] p = line.split(" ");
         if (p.length<2) continue;
 
         if (line.startsWith("Submitted job: ") && p.length==3) {
-          jobID = p[3];
+          jobID = p[2];
         }
 
         try {
+          timestampFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
           when = timestampFormat.parse(p[0]);
         } catch (Exception x) {
           // not the format we're looking for
           continue;
         }
-        StringBuffer labelMaker = new StringBuffer();
-        for (int i=2; i<p.length; i++) {
-          if (i>2) labelMaker.append(" ");
-          labelMaker.append(p[i]);
-        }
-        String l = labelMaker.toString();
 
-        if (l.startsWith("Starting worker pool synchronously")) {
+
+        if (line.contains("Starting worker pool synchronously")) {
           job = new ConcreteOperationInterval();
           job.begin = when;
           job.attributes.put("log", "stdout");
@@ -71,7 +68,7 @@ public class ClientStdoutParser {
           } else {
             job.label = "Client of Dataflow job";
           }
-        } else if (l.startsWith("Worker pool is running")) {
+        } else if (line.contains("Worker pool is running")) {
           ConcreteOperationInterval startup = new ConcreteOperationInterval();
           startup.begin = job.begin;
           startup.end = when;
@@ -79,7 +76,7 @@ public class ClientStdoutParser {
           addDuration(startup);
           job.sub.add(startup);
           opStartTime = when;
-        } else if (l.startsWith("Executing operation")) {
+        } else if (line.contains("Executing operation")) {
           if (opInProgress!=null) {
             ConcreteOperationInterval op = new ConcreteOperationInterval();
             op.begin = opStartTime;
@@ -89,9 +86,10 @@ public class ClientStdoutParser {
             job.sub.add(op);
             opInProgress = null;
           }
-          opInProgress = l;
+          opInProgress = line.substring(line.indexOf("Executing operation"));
           opStartTime = when;
-        } else if (l.startsWith("Starting worker pool teardown")) {
+        } else if (line.contains("Starting worker pool teardown") || line.contains("Stopping worker pool synchronously...")) {
+          if ("TEARDOWN".equals(opInProgress)) continue;
           if (opInProgress!=null) {
             ConcreteOperationInterval op = new ConcreteOperationInterval();
             op.begin = opStartTime;
@@ -103,7 +101,7 @@ public class ClientStdoutParser {
           }
           opInProgress = "TEARDOWN";
           opStartTime = when;
-        } else if (l.startsWith("Worker pool stopped")) {
+        } else if (line.contains("Worker pool stopped")) {
           if (opInProgress=="TEARDOWN") {
             ConcreteOperationInterval op = new ConcreteOperationInterval();
             op.begin = opStartTime;
