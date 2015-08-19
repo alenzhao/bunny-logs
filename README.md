@@ -40,7 +40,7 @@ Run analyzer.Main with your log as argument. It'll print the report to the scree
 The easiest way is to replace calls to `new DoFn` with calls to `new DoFnWLog`. This will track when the bundles
 start and end. 
 
-You can see examples in the [src/main/java/com/google/bunnylog/examples/](tree/master/src/main/java/com/google/bunnylog/examples/) folder.
+You can see examples in the [src/main/java/com/google/bunnylog/examples/](https://github.com/googlegenomics/bunny-logs/tree/master/src/main/java/com/google/bunnylog/examples/) folder.
 
 You can also change your code to print bunny-formatted log lines to indicate when things start and stop.
 
