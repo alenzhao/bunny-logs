@@ -9,6 +9,10 @@ import org.apache.logging.log4j.LogManager;
  * A sample multithreaded program that generates a log that we can then process.
  *
  * You can run this example via the following command:
+ * mvn install
+ * java -cp target/*cies.jar com.google.bunnylog.examples.multithreaded.Main
+ *
+ * or if you prefer:
  * mvn exec:java -Dexec.mainClass="com.google.bunnylog.examples.multithreaded.Main"
  */
 public class Main {
@@ -67,7 +71,7 @@ public class Main {
     Thread.sleep(100);
     System.out.println("We're done! Next: ");
     System.out.println("  1) copy this output to log.txt (if you haven't already)");
-    System.out.println("  2) run mvn exec:java -Dexec.mainClass=\"com.google.bunnylog.analyzer.Main\" -Dexec.args=\"-l log.txt\"");
+    System.out.println("  2) run java -jar target/*cies.jar -l log.txt");
     System.out.println("  3) open out.svg in your web browser (or svg editor if you have one).");
   }
 

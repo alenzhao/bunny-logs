@@ -18,7 +18,12 @@ import java.util.List;
  * A sample dataflow program that generates a log that we can then process.
  *
  * You can run this example via the following command:
+ * mvn install
+ * java -cp target/*cies.jar com.google.bunnylog.examples.dataflow.Main
+ *
+ * or, if you prefer:
  * mvn exec:java -Dexec.mainClass="com.google.bunnylog.examples.dataflow.Main"
+ *
  */
 public class Main {
 
@@ -38,7 +43,7 @@ public class Main {
         .apply(GrowCarrots.by(100))
         .apply(Harvest.of())
         .apply(TextIO.Write.to(output))
-        ;
+    ;
 
     bl.stepEnd("setup pipeline");
     pipeline.run();
@@ -48,7 +53,7 @@ public class Main {
     System.out.println("We're done! Next: ");
     System.out.println("  1) copy this output to log-df.txt (if you haven't already)");
     System.out.println("  2) grab the dataflow log 'worker-stdout' to worker-stdout.json");
-    System.out.println("  3) run mvn exec:java -Dexec.mainClass=\"com.google.bunnylog.analyzer.Main\" -Dexec.args=\"-l log-df.txt -d worker-stdout.json\"");
+    System.out.println("  3) run java -jar target/*cies.jar -l log-df.txt -d worker-stdout.json");
     System.out.println("  4) open out.svg in your web browser (or svg editor if you have one).");
   }
 
